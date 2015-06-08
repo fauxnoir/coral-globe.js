@@ -1,0 +1,29 @@
+{
+  "name": "coral.globe.js",
+  "version": "0.1.0",
+  "authors": [
+    "Matthias De Vriendt (fauxnoir) <devriendt.matthias@gmail.com>"
+  ],
+  "description": "Generate random planet meshes in three.js",
+  "keywords": [
+    "three",
+    "coral"
+  ],
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "threejs": "*",
+    "stats.js": "*",
+    "dat-gui": "~0.5.1",
+    "sketch.js": "*",
+    "normalize.css": "~3.0.3",
+    "threex.rendererstats": "*",
+    "coral.blob.js": "*"
+  }
+}
