@@ -1,9 +1,13 @@
-var Coral, demo, renderer, rendererStats, stats;
+var Coral, TRESHOLD, demo, objectPlanet, renderer, rendererStats, stats;
 
 Coral = Coral || {};
 
+TRESHOLD = 0;
+
+objectPlanet = new THREE.Object3D();
+
 Coral.Globe = function() {
-  var COLORS, geometry, geometryOptions, material, mesh;
+  var COLORS, c, e, geometryBlob, geometryGlobe, geometryOptions, i, j, len, material, meshBlob, meshGlobe, noise, ops, ref, v;
   COLORS = [0x86c9b6, 0x76b290, 0x90c998, 0x81b276, 0xa4c382];
   geometryOptions = {
     smoothing: 25,
@@ -16,12 +20,32 @@ Coral.Globe = function() {
       persistence: 0.5
     }
   };
-  geometry = Coral.Blob(geometryOptions);
+  geometryGlobe = Coral.Blob(geometryOptions);
   material = new THREE.MeshPhongMaterial({
     color: random(COLORS),
     shading: THREE.FlatShading
   });
-  return mesh = new THREE.Mesh(geometry, material);
+  meshGlobe = new THREE.Mesh(geometryGlobe, material);
+  noise = new FastSimplexNoise(geometryOptions.noiseOptions);
+  console.assert(geometryGlobe.vertices != null);
+  ref = geometryGlobe.vertices;
+  for (i = j = 0, len = ref.length; j < len; i = ++j) {
+    v = ref[i];
+    c = geometryOptions.radius * 2 * Math.PI;
+    e = this.noise.getSpherical3DNoise(c, v.x, v.y, v.z);
+    if (e > TRESHOLD) {
+      ops = {
+        smoothing: 5,
+        radius: 0.01,
+        detail: 1
+      };
+      geometryBlob = Coral.Blob(ops);
+      meshBlob = new THREE.Mesh(geometryBlob, material);
+      meshBlob.position.set(v.x, v.y, v.z);
+      objectPlanet.add(meshBlob);
+    }
+  }
+  return objectPlanet.add(meshGlobe);
 };
 
 stats = new Stats();
@@ -55,7 +79,7 @@ demo = Sketch.create({
     this.mesh = Coral.Globe();
     this.mesh.castShadow = true;
     this.mesh.receiveShadow = true;
-    this.light = new THREE.PointLight(0xffeed1);
+    this.light = new THREE.HemisphereLight(0xffeed1, 0x404040, 1.2);
     this.light.position.set(10, 10, 10);
     this.scene.add(this.light);
     return this.scene.add(this.mesh);

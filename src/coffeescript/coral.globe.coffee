@@ -1,5 +1,8 @@
 Coral  = Coral  || {}
 
+TRESHOLD = 0
+objectPlanet = new THREE.Object3D()
+
 Coral.Globe = ->
   
   COLORS = [
@@ -22,12 +25,49 @@ Coral.Globe = ->
     }
   }
 
-  geometry = Coral.Blob( geometryOptions )
+  geometryGlobe = Coral.Blob( geometryOptions )
   material = new THREE.MeshPhongMaterial {
     color: random COLORS
     shading: THREE.FlatShading
   }
 
-  mesh = new THREE.Mesh( geometry, material )
+  meshGlobe = new THREE.Mesh( geometryGlobe, material )
+
+
+
+  noise = new FastSimplexNoise( geometryOptions.noiseOptions )
+
+  console.assert( geometryGlobe.vertices? )
+  for v, i in geometryGlobe.vertices
+    c = geometryOptions.radius * 2 * Math.PI
+    e = @noise.getSpherical3DNoise( c, v.x, v.y, v.z )
+
+    if e > TRESHOLD
+      ops= {
+        smoothing: 5
+        radius: 0.01
+        detail: 1
+      }
+
+      geometryBlob = Coral.Blob( ops )
+      meshBlob = new THREE.Mesh( geometryBlob, material)
+      meshBlob.position.set( v.x, v.y, v.z )
+      
+      objectPlanet.add meshBlob
+
+    
+
+  
+
+  
+
+  
+
+
+  
+  objectPlanet.add meshGlobe
+
+  
+
 
 

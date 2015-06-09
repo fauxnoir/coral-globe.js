@@ -31,7 +31,7 @@ demo = Sketch.create({
     @mesh.castShadow = true
     @mesh.receiveShadow = true
 
-    @light = new THREE.PointLight( 0xffeed1 )
+    @light = new THREE.HemisphereLight( 0xffeed1, 0x404040, 1.2)
     @light.position.set(10, 10,10)
 
     @scene.add(@light)
