@@ -1,6 +1,6 @@
 Coral  = Coral  || {}
 
-TRESHOLD = 0
+TRESHOLD = 0.3
 objectPlanet = new THREE.Object3D()
 
 Coral.Globe = ->
@@ -14,12 +14,12 @@ Coral.Globe = ->
   ]
 
   geometryOptions = {
-    smoothing: 25
-    detail: 5
+    smoothing: 20
+    detail: 4
     radius: 0.5
     noiseOptions: {
       amplitude: 1.0
-      frequency: 0.4
+      frequency: 1.5
       octaves: 1
       persistence: 0.5
     }
@@ -35,25 +35,47 @@ Coral.Globe = ->
 
 
 
-  noise = new FastSimplexNoise( geometryOptions.noiseOptions )
 
+  noiseOptions = {
+    amplitude: 1
+    frequency: 5
+    octaves: 1
+    persistence: 0.5
+  }
+
+  beir = new FastSimplexNoise( noiseOptions )
+  console.log beir
   console.assert( geometryGlobe.vertices? )
-  for v, i in geometryGlobe.vertices
-    c = geometryOptions.radius * 2 * Math.PI
-    e = @noise.getSpherical3DNoise( c, v.x, v.y, v.z )
 
+  geometryBlob = []
+  meshBlob = []
+
+  for v, i in geometryGlobe.vertices
+    e = beir.get3DNoise( v.x, v.y, v.z )
+
+    console.log e
     if e > TRESHOLD
       ops= {
-        smoothing: 5
+        smoothing: 3
         radius: 0.01
-        detail: 1
+        detail: 2
+        noiseOptions: {
+          amplitude: 1.0
+          frequency: 30
+          octaves: 1
+          persistence: 0.5
+        }
       }
 
-      geometryBlob = Coral.Blob( ops )
-      meshBlob = new THREE.Mesh( geometryBlob, material)
-      meshBlob.position.set( v.x, v.y, v.z )
+      geometryBlob[i] = Coral.Blob( ops )
+      meshBlob[i] = new THREE.Mesh( geometryBlob[i], material)
+      meshBlob[i].position.set( v.x, v.y, v.z )
       
-      objectPlanet.add meshBlob
+      meshBlob[i].castShadow = true
+      meshBlob[i].receiveShadow = true
+      
+      console.log meshBlob[i]
+      objectPlanet.add meshBlob[i]
 
     
 
@@ -94,10 +116,12 @@ demo = Sketch.create({
 
   setup: ->
 
-    @camera = new THREE.PerspectiveCamera(90, @.width / @.height, 0.01, 400 )
-    @camera.setLens(25, 35)
-    @camera.position.set(0, 0, 0.5 + 0.55)
-    @camera.rotation.x = 70 * Math.PI / 180
+    @camera = new THREE.PerspectiveCamera(90, @.width / @.height, 0.01, 10 )
+    @camera.setLens(35, 35)
+    @camera.position.set(0, 0, 0.5 + 0.65)
+    @camera.rotation.x = 50 * Math.PI / 180
+
+    # @camera.position.set(0, 0, 2)
 
     @scene = new THREE.Scene()
 

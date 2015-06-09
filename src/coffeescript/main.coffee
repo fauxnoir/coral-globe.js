@@ -20,10 +20,12 @@ demo = Sketch.create({
 
   setup: ->
 
-    @camera = new THREE.PerspectiveCamera(90, @.width / @.height, 0.01, 400 )
-    @camera.setLens(25, 35)
-    @camera.position.set(0, 0, 0.5 + 0.55)
-    @camera.rotation.x = 70 * Math.PI / 180
+    @camera = new THREE.PerspectiveCamera(90, @.width / @.height, 0.01, 10 )
+    @camera.setLens(35, 35)
+    @camera.position.set(0, 0, 0.5 + 0.65)
+    @camera.rotation.x = 50 * Math.PI / 180
+
+    # @camera.position.set(0, 0, 2)
 
     @scene = new THREE.Scene()
 

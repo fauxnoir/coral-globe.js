@@ -2,20 +2,20 @@ var Coral, TRESHOLD, demo, objectPlanet, renderer, rendererStats, stats;
 
 Coral = Coral || {};
 
-TRESHOLD = 0;
+TRESHOLD = 0.3;
 
 objectPlanet = new THREE.Object3D();
 
 Coral.Globe = function() {
-  var COLORS, c, e, geometryBlob, geometryGlobe, geometryOptions, i, j, len, material, meshBlob, meshGlobe, noise, ops, ref, v;
+  var COLORS, beir, e, geometryBlob, geometryGlobe, geometryOptions, i, j, len, material, meshBlob, meshGlobe, noiseOptions, ops, ref, v;
   COLORS = [0x86c9b6, 0x76b290, 0x90c998, 0x81b276, 0xa4c382];
   geometryOptions = {
-    smoothing: 25,
-    detail: 5,
+    smoothing: 20,
+    detail: 4,
     radius: 0.5,
     noiseOptions: {
       amplitude: 1.0,
-      frequency: 0.4,
+      frequency: 1.5,
       octaves: 1,
       persistence: 0.5
     }
@@ -26,23 +26,41 @@ Coral.Globe = function() {
     shading: THREE.FlatShading
   });
   meshGlobe = new THREE.Mesh(geometryGlobe, material);
-  noise = new FastSimplexNoise(geometryOptions.noiseOptions);
+  noiseOptions = {
+    amplitude: 1,
+    frequency: 5,
+    octaves: 1,
+    persistence: 0.5
+  };
+  beir = new FastSimplexNoise(noiseOptions);
+  console.log(beir);
   console.assert(geometryGlobe.vertices != null);
+  geometryBlob = [];
+  meshBlob = [];
   ref = geometryGlobe.vertices;
   for (i = j = 0, len = ref.length; j < len; i = ++j) {
     v = ref[i];
-    c = geometryOptions.radius * 2 * Math.PI;
-    e = this.noise.getSpherical3DNoise(c, v.x, v.y, v.z);
+    e = beir.get3DNoise(v.x, v.y, v.z);
+    console.log(e);
     if (e > TRESHOLD) {
       ops = {
-        smoothing: 5,
+        smoothing: 3,
         radius: 0.01,
-        detail: 1
+        detail: 2,
+        noiseOptions: {
+          amplitude: 1.0,
+          frequency: 30,
+          octaves: 1,
+          persistence: 0.5
+        }
       };
-      geometryBlob = Coral.Blob(ops);
-      meshBlob = new THREE.Mesh(geometryBlob, material);
-      meshBlob.position.set(v.x, v.y, v.z);
-      objectPlanet.add(meshBlob);
+      geometryBlob[i] = Coral.Blob(ops);
+      meshBlob[i] = new THREE.Mesh(geometryBlob[i], material);
+      meshBlob[i].position.set(v.x, v.y, v.z);
+      meshBlob[i].castShadow = true;
+      meshBlob[i].receiveShadow = true;
+      console.log(meshBlob[i]);
+      objectPlanet.add(meshBlob[i]);
     }
   }
   return objectPlanet.add(meshGlobe);
@@ -71,10 +89,10 @@ demo = Sketch.create({
   element: renderer.domElement,
   context: renderer.context,
   setup: function() {
-    this.camera = new THREE.PerspectiveCamera(90, this.width / this.height, 0.01, 400);
-    this.camera.setLens(25, 35);
-    this.camera.position.set(0, 0, 0.5 + 0.55);
-    this.camera.rotation.x = 70 * Math.PI / 180;
+    this.camera = new THREE.PerspectiveCamera(90, this.width / this.height, 0.01, 10);
+    this.camera.setLens(35, 35);
+    this.camera.position.set(0, 0, 0.5 + 0.65);
+    this.camera.rotation.x = 50 * Math.PI / 180;
     this.scene = new THREE.Scene();
     this.mesh = Coral.Globe();
     this.mesh.castShadow = true;
