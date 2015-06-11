@@ -59,12 +59,11 @@ module.exports = (grunt) ->
         options: {
           bare: true
           join: true
-          sourceMap: true
+          sourceMap: false
         }
 
         files: {
-          'src/js/coral.blob.js': 'src/coffeescript/coral.blob.coffee'
-          'build/examples/js/main.js': 'src/coffeescript/main.coffee'
+          'build/js/coral.globe.js': 'src/coffeescript/coral.globe.coffee'
         }
       }
     }
@@ -87,7 +86,7 @@ module.exports = (grunt) ->
     uglify: {
       minify: {
         files: {
-          'build/js/coral.blob.min.js': 'src/js/coral.blob.js'
+          'build/js/coral.globe.min.js': 'build/js/coral.globe.js'
         }
       }
     }

@@ -1,4 +1,4 @@
-var Coral, demo, renderer, rendererStats, stats;
+var Coral;
 
 Coral = Coral || {};
 
@@ -100,61 +100,3 @@ Coral.Globe.Orient = function(vector, object) {
   }
   return object.rotation.set(this.phi, 0, this.theta, 'ZXY');
 };
-
-stats = new Stats();
-
-stats.domElement.style.position = 'absolute';
-
-stats.domElement.style.left = '0px';
-
-stats.domElement.style.top = '0px';
-
-rendererStats = new THREEx.RendererStats();
-
-rendererStats.domElement.style.position = 'absolute';
-
-rendererStats.domElement.style.left = '0px';
-
-rendererStats.domElement.style.bottom = '0px';
-
-renderer = new THREE.WebGLRenderer();
-
-demo = Sketch.create({
-  type: Sketch.WEBGL,
-  element: renderer.domElement,
-  context: renderer.context,
-  setup: function() {
-    this.camera = new THREE.PerspectiveCamera(90, this.width / this.height, 0.01, 10);
-    this.camera.position.set(0, 0, 1.5);
-    this.scene = new THREE.Scene();
-    this.mesh = Coral.Globe();
-    this.mesh.castShadow = true;
-    this.mesh.receiveShadow = true;
-    this.light = new THREE.HemisphereLight(0xffeed1, 0x404040, 1.2);
-    this.light.position.set(10, 10, 10);
-    this.scene.add(this.light);
-    return this.scene.add(this.mesh);
-  },
-  resize: function() {
-    this.camera.aspect = this.width / this.height;
-    this.camera.updateProjectionMatrix();
-    return renderer.setSize(this.width, this.height);
-  },
-  draw: function() {
-    stats.begin();
-    this.mesh.rotation.x += 0.001;
-    this.mesh.rotation.y += 0.001;
-    renderer.render(this.scene, this.camera);
-    stats.end();
-    return rendererStats.update(renderer);
-  }
-});
-
-window.onload = function() {
-  var gui;
-  document.body.appendChild(stats.domElement);
-  document.body.appendChild(rendererStats.domElement);
-  return gui = new dat.GUI();
-};
-
-//# sourceMappingURL=main.js.map
