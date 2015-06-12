@@ -4,7 +4,7 @@ Coral.Globe = ->
   
   square = (x) -> x * x
 
-  TRESHOLD = 0.35
+  TRESHOLD = 0.17
   objectPlanet = new THREE.Object3D()
 
   COLORS = [
@@ -16,7 +16,7 @@ Coral.Globe = ->
   ]
 
   geometryOps = {
-    smoothing: 15
+    smoothing: 20
     detail: 4
     radius: 0.5
     noiseOptions: {
@@ -28,6 +28,7 @@ Coral.Globe = ->
   }
 
   geoGlobe = Coral.Blob( geometryOps )
+  
   material = new THREE.MeshPhongMaterial {
     color: random COLORS
     shading: THREE.FlatShading
@@ -39,6 +40,7 @@ Coral.Globe = ->
 
   mGlobe = new THREE.Mesh( geoGlobe, material )
 
+  # For populating
   noiseOps = {
     amplitude: 1
     frequency: 2.5
@@ -59,7 +61,7 @@ Coral.Globe = ->
     if e > TRESHOLD
       ops= {
         smoothing: 3
-        radius: Math.random() / 35
+        radius: 1
         detail: 1
         noiseOptions: {
           amplitude: 1.0
@@ -70,25 +72,35 @@ Coral.Globe = ->
       }
 
       # Quick n dirty cointoss
-      if Math.random() > 0.75
-
+      if Math.random() > 0.90
+        # Create a rock
         geometryBlob[i] = Coral.Blob( ops )
-        meshBlob[i] = new THREE.Mesh( geometryBlob[i], material)
-      else
-        geometryBlob[i] = new THREE.BoxGeometry( 0.015, 0.2, 0.015 )
-        meshBlob[i] = new THREE.Mesh( geometryBlob[i], material)
-      
+       
+        matRock = new THREE.MeshPhongMaterial ( color: 0x9a9da4, shading: THREE.FlatShading )
+
+        meshBlob[i] = new THREE.Mesh( geometryBlob[i], matRock)
+        meshBlob[i].scale.set( 0.005, 0.005, 0.005 )
+        meshBlob[i].position.set( v.x, v.y + 0.01, v.z )
+
+      else if Math.random() > 0.50
+        meshBlob[i] = Coral.Tree() # 'mesh' is semantically wrong here
+        meshBlob[i].scale.set( 0.1, 0.1, 0.1 )
+        meshBlob[i].position.set( v.x, v.y + 0.04, v.z )
+
       # Set position
-      meshBlob[i].position.set( v.x, v.y, v.z )
+      if meshBlob[i]?
 
-      # Set the orientation
-      vector = new THREE.Vector3( v.x, v.y, v.z )
-      Coral.Globe.Orient( vector, meshBlob[i] )
+        # Set the orientation
+        vector = new THREE.Vector3( v.x, v.y, v.z )
+        Coral.Globe.Orient( vector, meshBlob[i] )
 
-      meshBlob[i].castShadow = true
-      meshBlob[i].receiveShadow = true
+        meshBlob[i].castShadow = true
+        meshBlob[i].receiveShadow = true
+        
+        objectPlanet.add meshBlob[i]
       
-      objectPlanet.add meshBlob[i]
+
+      
 
   # RETURN
   objectPlanet.add mGlobe
@@ -168,11 +180,11 @@ demo = Sketch.create({
   setup: ->
 
     @camera = new THREE.PerspectiveCamera(90, @.width / @.height, 0.01, 10 )
-    # @camera.setLens(150, 105) # Dat gui!
-    # @camera.position.set(0, 0, 0.5 + 0.65)
-    # @camera.rotation.x = 55 * Math.PI / 180
+    @camera.setLens(150, 105) # Dat gui!
+    @camera.position.set(0, 0, 0.5 + 0.75)
+    @camera.rotation.x = 55 * Math.PI / 180
 
-    @camera.position.set(0, 0, 1.5)
+    # @camera.position.set(0, 0, 1.5)
 
     @scene = new THREE.Scene()
 
@@ -197,8 +209,8 @@ demo = Sketch.create({
     ## Start of stats.js monitored code.
     stats.begin()
 
-    @mesh.rotation.x += 0.001
-    @mesh.rotation.y += 0.001
+    @mesh.rotation.x += 0.0005
+    @mesh.rotation.y += 0.0007
 
     renderer.render( @scene, @camera )
 

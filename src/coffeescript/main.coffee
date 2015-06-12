@@ -21,11 +21,11 @@ demo = Sketch.create({
   setup: ->
 
     @camera = new THREE.PerspectiveCamera(90, @.width / @.height, 0.01, 10 )
-    # @camera.setLens(150, 105) # Dat gui!
-    # @camera.position.set(0, 0, 0.5 + 0.65)
-    # @camera.rotation.x = 55 * Math.PI / 180
+    @camera.setLens(150, 105) # Dat gui!
+    @camera.position.set(0, 0, 0.5 + 0.75)
+    @camera.rotation.x = 55 * Math.PI / 180
 
-    @camera.position.set(0, 0, 1.5)
+    # @camera.position.set(0, 0, 1.5)
 
     @scene = new THREE.Scene()
 
@@ -50,8 +50,8 @@ demo = Sketch.create({
     ## Start of stats.js monitored code.
     stats.begin()
 
-    @mesh.rotation.x += 0.001
-    @mesh.rotation.y += 0.001
+    @mesh.rotation.x += 0.0005
+    @mesh.rotation.y += 0.0007
 
     renderer.render( @scene, @camera )
 

@@ -106,7 +106,7 @@ module.exports = (grunt) ->
       }
 
       options: {
-        proxy: 'localhost.boilerplate.com/src'
+        proxy: 'boilerplate.dev'
         # server: {
         #   baseDir: 'src/'
         # }
