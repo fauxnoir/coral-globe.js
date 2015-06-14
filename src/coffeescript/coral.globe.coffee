@@ -13,6 +13,7 @@ Coral.Globe = ->
     0x90c998
     0x81b276
     0xa4c382
+    0x6d4f33
   ]
 
   geometryOps = {
