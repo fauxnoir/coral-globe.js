@@ -3,15 +3,15 @@ var Coral;
 Coral = Coral || {};
 
 Coral.Globe = function() {
-  var COLORS, TRESHOLD, e, geoGlobe, geoNoise, geometryBlob, geometryOps, i, j, len, mGlobe, material, meshBlob, noiseOps, objectPlanet, ops, ref, square, v, vector;
+  var COLORS, TRESHOLD, e, geoGlobe, geoNoise, geometryBlob, geometryOps, i, j, len, mGlobe, matRock, material, meshBlob, noiseOps, objectPlanet, ops, ref, square, v, vector;
   square = function(x) {
     return x * x;
   };
-  TRESHOLD = 0.35;
+  TRESHOLD = 0.17;
   objectPlanet = new THREE.Object3D();
-  COLORS = [0x86c9b6, 0x76b290, 0x90c998, 0x81b276, 0xa4c382];
+  COLORS = [0x86c9b6, 0x76b290, 0x90c998, 0x81b276, 0xa4c382, 0x6d4f33];
   geometryOps = {
-    smoothing: 15,
+    smoothing: 20,
     detail: 4,
     radius: 0.5,
     noiseOptions: {
@@ -44,7 +44,7 @@ Coral.Globe = function() {
     if (e > TRESHOLD) {
       ops = {
         smoothing: 3,
-        radius: Math.random() / 35,
+        radius: 1,
         detail: 1,
         noiseOptions: {
           amplitude: 1.0,
@@ -53,19 +53,27 @@ Coral.Globe = function() {
           persistence: 0.5
         }
       };
-      if (Math.random() > 0.75) {
+      if (Math.random() > 0.90) {
         geometryBlob[i] = Coral.Blob(ops);
-        meshBlob[i] = new THREE.Mesh(geometryBlob[i], material);
-      } else {
-        geometryBlob[i] = new THREE.BoxGeometry(0.015, 0.2, 0.015);
-        meshBlob[i] = new THREE.Mesh(geometryBlob[i], material);
+        matRock = new THREE.MeshPhongMaterial({
+          color: 0x9a9da4,
+          shading: THREE.FlatShading
+        });
+        meshBlob[i] = new THREE.Mesh(geometryBlob[i], matRock);
+        meshBlob[i].scale.set(0.005, 0.005, 0.005);
+        meshBlob[i].position.set(v.x, v.y + 0.01, v.z);
+      } else if (Math.random() > 0.50) {
+        meshBlob[i] = Coral.Tree();
+        meshBlob[i].scale.set(0.1, 0.1, 0.1);
+        meshBlob[i].position.set(v.x, v.y + 0.04, v.z);
       }
-      meshBlob[i].position.set(v.x, v.y, v.z);
-      vector = new THREE.Vector3(v.x, v.y, v.z);
-      Coral.Globe.Orient(vector, meshBlob[i]);
-      meshBlob[i].castShadow = true;
-      meshBlob[i].receiveShadow = true;
-      objectPlanet.add(meshBlob[i]);
+      if (meshBlob[i] != null) {
+        vector = new THREE.Vector3(v.x, v.y, v.z);
+        Coral.Globe.Orient(vector, meshBlob[i]);
+        meshBlob[i].castShadow = true;
+        meshBlob[i].receiveShadow = true;
+        objectPlanet.add(meshBlob[i]);
+      }
     }
   }
   return objectPlanet.add(mGlobe);
