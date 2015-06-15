@@ -20,12 +20,12 @@ demo = Sketch.create({
 
   setup: ->
 
-    @camera = new THREE.PerspectiveCamera(90, @.width / @.height, 0.01, 10 )
-    @camera.setLens(150, 105) # Dat gui!
-    @camera.position.set(0, 0, 0.5 + 0.75)
-    @camera.rotation.x = 55 * Math.PI / 180
+    @camera = new THREE.PerspectiveCamera(90, @.width / @.height, 0.01, 10000 )
+    # @camera.setLens(150, 105) # Dat gui!
+    # @camera.position.set(0, 100, 1000)
+    # @camera.rotation.x = 30 * Math.PI / 180
 
-    # @camera.position.set(0, 0, 1.5)
+    @camera.position.set(0, 0, 1300)
 
     @scene = new THREE.Scene()
 
@@ -34,7 +34,7 @@ demo = Sketch.create({
     @mesh.receiveShadow = true
 
     @light = new THREE.HemisphereLight( 0xffeed1, 0x404040, 1.2)
-    @light.position.set(10, 10,10)
+    @light.position.set(10, 600,600)
 
     @scene.add(@light)
     @scene.add(@mesh)

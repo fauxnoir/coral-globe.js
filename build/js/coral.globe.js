@@ -3,7 +3,7 @@ var Coral;
 Coral = Coral || {};
 
 Coral.Globe = function() {
-  var COLORS, TRESHOLD, e, geoGlobe, geoNoise, geometryBlob, geometryOps, i, j, len, mGlobe, matRock, material, meshBlob, noiseOps, objectPlanet, ops, ref, square, v, vector;
+  var COLORS, TRESHOLD, e, geoGlobe, geoNoise, geometryBlob, geometryOps, i, j, len, mGlobe, matRock, material, meshBlob, noiseOps, objectPlanet, ops, radius, ref, square, v, vector;
   square = function(x) {
     return x * x;
   };
@@ -11,12 +11,12 @@ Coral.Globe = function() {
   objectPlanet = new THREE.Object3D();
   COLORS = [0x86c9b6, 0x76b290, 0x90c998, 0x81b276, 0xa4c382, 0x6d4f33];
   geometryOps = {
-    smoothing: 20,
-    detail: 4,
-    radius: 0.5,
+    smoothing: 13,
+    detail: 3,
+    radius: 300,
     noiseOptions: {
       amplitude: 1.0,
-      frequency: 1.5,
+      frequency: 0.002,
       octaves: 1,
       persistence: 0.5
     }
@@ -29,7 +29,7 @@ Coral.Globe = function() {
   mGlobe = new THREE.Mesh(geoGlobe, material);
   noiseOps = {
     amplitude: 1,
-    frequency: 2.5,
+    frequency: 5,
     octaves: 1,
     persistence: 0.5
   };
@@ -43,12 +43,12 @@ Coral.Globe = function() {
     e = geoNoise.get3DNoise(v.x, v.y, v.z);
     if (e > TRESHOLD) {
       ops = {
-        smoothing: 3,
+        smoothing: 2,
         radius: 1,
         detail: 1,
         noiseOptions: {
           amplitude: 1.0,
-          frequency: 30,
+          frequency: 0.3,
           octaves: 1,
           persistence: 0.5
         }
@@ -60,12 +60,14 @@ Coral.Globe = function() {
           shading: THREE.FlatShading
         });
         meshBlob[i] = new THREE.Mesh(geometryBlob[i], matRock);
-        meshBlob[i].scale.set(0.005, 0.005, 0.005);
-        meshBlob[i].position.set(v.x, v.y + 0.01, v.z);
-      } else if (Math.random() > 0.50) {
+        radius = geometryOps.radius / 20;
+        meshBlob[i].scale.set(radius, radius, radius);
+        meshBlob[i].position.set(v.x, v.y, v.z);
+      } else if (Math.random() > 0) {
         meshBlob[i] = Coral.Tree();
-        meshBlob[i].scale.set(0.1, 0.1, 0.1);
-        meshBlob[i].position.set(v.x, v.y + 0.04, v.z);
+        radius = geometryOps.radius / 1.5;
+        meshBlob[i].scale.set(radius, radius, radius);
+        meshBlob[i].position.set(v.x, v.y, v.z);
       }
       if (meshBlob[i] != null) {
         vector = new THREE.Vector3(v.x, v.y, v.z);

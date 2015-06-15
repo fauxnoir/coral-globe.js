@@ -17,12 +17,13 @@ Coral.Globe = ->
   ]
 
   geometryOps = {
-    smoothing: 20
-    detail: 4
-    radius: 0.5
+    smoothing: 13
+    detail: 3
+    # radius: 0.5
+    radius: 300
     noiseOptions: {
       amplitude: 1.0
-      frequency: 1.5
+      frequency: 0.002
       octaves: 1
       persistence: 0.5
     }
@@ -41,10 +42,10 @@ Coral.Globe = ->
 
   mGlobe = new THREE.Mesh( geoGlobe, material )
 
-  # For populating
+  # Generate a different noise field used to populate the globe with objects
   noiseOps = {
     amplitude: 1
-    frequency: 2.5
+    frequency: 5
     octaves: 1
     persistence: 0.5
   }
@@ -61,12 +62,12 @@ Coral.Globe = ->
 
     if e > TRESHOLD
       ops= {
-        smoothing: 3
+        smoothing: 2
         radius: 1
         detail: 1
         noiseOptions: {
           amplitude: 1.0
-          frequency: 30
+          frequency: 0.3
           octaves: 1
           persistence: 0.5
         }
@@ -80,13 +81,17 @@ Coral.Globe = ->
         matRock = new THREE.MeshPhongMaterial ( color: 0x9a9da4, shading: THREE.FlatShading )
 
         meshBlob[i] = new THREE.Mesh( geometryBlob[i], matRock)
-        meshBlob[i].scale.set( 0.005, 0.005, 0.005 )
-        meshBlob[i].position.set( v.x, v.y + 0.01, v.z )
+        
+        radius = geometryOps.radius / 20
+        meshBlob[i].scale.set( radius, radius, radius )
+        meshBlob[i].position.set( v.x, v.y, v.z )
 
-      else if Math.random() > 0.50
+      else if Math.random() > 0
         meshBlob[i] = Coral.Tree() # 'mesh' is semantically wrong here
-        meshBlob[i].scale.set( 0.1, 0.1, 0.1 )
-        meshBlob[i].position.set( v.x, v.y + 0.04, v.z )
+
+        radius = geometryOps.radius / 1.5
+        meshBlob[i].scale.set( radius, radius, radius )
+        meshBlob[i].position.set( v.x, v.y , v.z )
 
       # Set position
       if meshBlob[i]?
@@ -180,12 +185,12 @@ demo = Sketch.create({
 
   setup: ->
 
-    @camera = new THREE.PerspectiveCamera(90, @.width / @.height, 0.01, 10 )
-    @camera.setLens(150, 105) # Dat gui!
-    @camera.position.set(0, 0, 0.5 + 0.75)
-    @camera.rotation.x = 55 * Math.PI / 180
+    @camera = new THREE.PerspectiveCamera(90, @.width / @.height, 0.01, 10000 )
+    # @camera.setLens(150, 105) # Dat gui!
+    # @camera.position.set(0, 100, 1000)
+    # @camera.rotation.x = 30 * Math.PI / 180
 
-    # @camera.position.set(0, 0, 1.5)
+    @camera.position.set(0, 0, 1300)
 
     @scene = new THREE.Scene()
 
@@ -194,7 +199,7 @@ demo = Sketch.create({
     @mesh.receiveShadow = true
 
     @light = new THREE.HemisphereLight( 0xffeed1, 0x404040, 1.2)
-    @light.position.set(10, 10,10)
+    @light.position.set(10, 600,600)
 
     @scene.add(@light)
     @scene.add(@mesh)
