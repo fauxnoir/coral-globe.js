@@ -56,6 +56,8 @@ Coral.Globe = ->
   geometryBlob = []
   meshBlob = []
 
+
+  ### Add random objects ###
   for v, i in geoGlobe.vertices
 
     e = geoNoise.get3DNoise( v.x, v.y, v.z )
@@ -106,20 +108,74 @@ Coral.Globe = ->
         objectPlanet.add meshBlob[i]
       
 
-      
-
   # RETURN
   objectPlanet.add mGlobe
 
   
   ### END Coral.Globe() ###
 
+Coral.Clouds = ->
+ 
+  r = 1000
+
+  objectClouds = new THREE.Object3D()
+
+  # material = new THREE.MeshBasicMaterial {
+  #   wireframe: true
+  # }
+
+  material = new THREE.MeshPhongMaterial {
+    color: 0xffffff
+    shading: THREE.FlatShading
+  }
+
+  for i in [0..100]
+    # Generate a random point on the surface of a sphere (latitude and longitude)
+    u = Math.random()
+    v = Math.random()
+
+    theta = Math.PI * 2 * u
+    phi = Math.acos( 2 * v - 1 )
+
+    # Convert to cartesian coordinates
+    x = r * Math.sin( phi ) * Math.cos( theta )
+    y = r * Math.sin( phi ) * Math.sin( theta )
+    z = r * Math.cos( phi )
+
+    geoCloudOps = {
+      smoothing: 2
+      detail: 2
+      radius: 0.7 # Scale later, noise ratio must be correct
+      
+      noiseOptions: {
+        amplitude: 1.0
+        frequency: 0.4
+        octaves: 1
+        persistence: 0.5
+      }
+    }
+
+    geoCloud = Coral.Blob( geoCloudOps )
+    meshCloud = new THREE.Mesh geoCloud, material
+
+    meshCloud.position.set x, y, z
+
+    scale = ( 10 / geoCloudOps.radius ) * ( 1 + Math.random() )
+    meshCloud.scale.set( scale * 2, scale, scale )
+
+    pos = new THREE.Vector3( x, y, z )
+    Coral.Globe.Orient( pos, meshCloud )
+
+    objectClouds.add( meshCloud )
+
+  objectClouds
+
 Coral.Globe.Orient = ( vector, object ) ->
   ### Coral.Globe.Orient()
   #
   # Rotate a given object so that it faces the orientation of
   # an arbitrary vector on the surface of a sphere.
-  #
+  # In this case we assume the sphere's origin is (0,0,0)
   ###
 
   # Declare the plane on which we will project the given normal
@@ -130,9 +186,6 @@ Coral.Globe.Orient = ( vector, object ) ->
 
   # Define the position of the normal vecor
   n = new THREE.Vector3( vector.x, vector.y, vector.z )
-  
-  # Calculate spherical coordinates
-  # @theta = new THREE.Vector3() # inclination or Zenith angle
   
   # Project n on the xy plane
   nxy = new THREE.Vector3()
@@ -186,15 +239,17 @@ demo = Sketch.create({
   setup: ->
 
     @camera = new THREE.PerspectiveCamera(90, @.width / @.height, 0.01, 10000 )
-    # @camera.setLens(150, 105) # Dat gui!
-    # @camera.position.set(0, 100, 1000)
-    # @camera.rotation.x = 30 * Math.PI / 180
+    @camera.setLens(150, 105) # Dat gui!
+    @camera.position.set(0, 100, 1000)
+    @camera.rotation.x = 30 * Math.PI / 180
 
-    @camera.position.set(0, 0, 1300)
+    # @camera.position.set(0, 0, 1300)
 
     @scene = new THREE.Scene()
 
     @mesh = Coral.Globe()
+    @orbit = Coral.Clouds()
+
     @mesh.castShadow = true
     @mesh.receiveShadow = true
 
@@ -203,6 +258,7 @@ demo = Sketch.create({
 
     @scene.add(@light)
     @scene.add(@mesh)
+    @scene.add(@orbit)
 
   resize: ->
     @camera.aspect = @.width / @.height
@@ -217,6 +273,10 @@ demo = Sketch.create({
 
     @mesh.rotation.x += 0.0005
     @mesh.rotation.y += 0.0007
+
+    @orbit.rotation.x += 0.0001
+    @orbit.rotation.y += 0.0002
+    @orbit.rotation.z += 0.0003
 
     renderer.render( @scene, @camera )
 

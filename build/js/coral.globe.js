@@ -37,6 +37,8 @@ Coral.Globe = function() {
   console.assert(geoGlobe.vertices != null);
   geometryBlob = [];
   meshBlob = [];
+
+  /* Add random objects */
   ref = geoGlobe.vertices;
   for (i = j = 0, len = ref.length; j < len; i = ++j) {
     v = ref[i];
@@ -83,13 +85,52 @@ Coral.Globe = function() {
   /* END Coral.Globe() */
 };
 
+Coral.Clouds = function() {
+  var geoCloud, geoCloudOps, i, j, material, meshCloud, objectClouds, phi, pos, r, scale, theta, u, v, x, y, z;
+  r = 1000;
+  objectClouds = new THREE.Object3D();
+  material = new THREE.MeshPhongMaterial({
+    color: 0xffffff,
+    shading: THREE.FlatShading
+  });
+  for (i = j = 0; j <= 100; i = ++j) {
+    u = Math.random();
+    v = Math.random();
+    theta = Math.PI * 2 * u;
+    phi = Math.acos(2 * v - 1);
+    x = r * Math.sin(phi) * Math.cos(theta);
+    y = r * Math.sin(phi) * Math.sin(theta);
+    z = r * Math.cos(phi);
+    geoCloudOps = {
+      smoothing: 2,
+      detail: 2,
+      radius: 0.7,
+      noiseOptions: {
+        amplitude: 1.0,
+        frequency: 0.4,
+        octaves: 1,
+        persistence: 0.5
+      }
+    };
+    geoCloud = Coral.Blob(geoCloudOps);
+    meshCloud = new THREE.Mesh(geoCloud, material);
+    meshCloud.position.set(x, y, z);
+    scale = (10 / geoCloudOps.radius) * (1 + Math.random());
+    meshCloud.scale.set(scale * 2, scale, scale);
+    pos = new THREE.Vector3(x, y, z);
+    Coral.Globe.Orient(pos, meshCloud);
+    objectClouds.add(meshCloud);
+  }
+  return objectClouds;
+};
+
 Coral.Globe.Orient = function(vector, object) {
 
   /* Coral.Globe.Orient()
    *
    * Rotate a given object so that it faces the orientation of
    * an arbitrary vector on the surface of a sphere.
-   *
+   * In this case we assume the sphere's origin is (0,0,0)
    */
   var n, nxy, unit_xy;
   unit_xy = new THREE.Vector3(1, 1, 0);

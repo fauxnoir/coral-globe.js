@@ -21,15 +21,17 @@ demo = Sketch.create({
   setup: ->
 
     @camera = new THREE.PerspectiveCamera(90, @.width / @.height, 0.01, 10000 )
-    # @camera.setLens(150, 105) # Dat gui!
-    # @camera.position.set(0, 100, 1000)
-    # @camera.rotation.x = 30 * Math.PI / 180
+    @camera.setLens(150, 105) # Dat gui!
+    @camera.position.set(0, 100, 1000)
+    @camera.rotation.x = 30 * Math.PI / 180
 
-    @camera.position.set(0, 0, 1300)
+    # @camera.position.set(0, 0, 1300)
 
     @scene = new THREE.Scene()
 
     @mesh = Coral.Globe()
+    @orbit = Coral.Clouds()
+
     @mesh.castShadow = true
     @mesh.receiveShadow = true
 
@@ -38,6 +40,7 @@ demo = Sketch.create({
 
     @scene.add(@light)
     @scene.add(@mesh)
+    @scene.add(@orbit)
 
   resize: ->
     @camera.aspect = @.width / @.height
@@ -52,6 +55,10 @@ demo = Sketch.create({
 
     @mesh.rotation.x += 0.0005
     @mesh.rotation.y += 0.0007
+
+    @orbit.rotation.x += 0.0001
+    @orbit.rotation.y += 0.0002
+    @orbit.rotation.z += 0.0003
 
     renderer.render( @scene, @camera )
 
